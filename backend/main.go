@@ -7,7 +7,7 @@ _ "github.com/mattn/go-sqlite3"
 )
 
 type Todo struct {
-    Task string `json:"task"`
+    Title string `json:"title"`
 	Description string `json:"description"`
 }
 
@@ -16,7 +16,7 @@ func main() {
 	// create 'database'
 	db := []Todo{} 
 
-	person := Todo{Task:"Ballin",Description:"You have to ball"}
+	person := Todo{Title:"Ballin",Description:"You have to ball"}
 
 	db = append(db,person)
 
@@ -70,7 +70,7 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *[]Todo) {
 ======== function to get Todos ===========
 */
 func getTodos(w http.ResponseWriter, db *[]Todo) {
-	log.Println("=========fuiyohh=======")
+	log.Println("====== Fetching data ======")
 	w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(*db)
 }
@@ -79,6 +79,7 @@ func getTodos(w http.ResponseWriter, db *[]Todo) {
 ========= function to create Todo  =========
 */
 func createTodo(w http.ResponseWriter, r *http.Request,db *[]Todo) {
+	log.Println("====== Posting data ======")
 	var todo Todo
     if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
