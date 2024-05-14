@@ -50,27 +50,45 @@ func main() {
 
 }
 
-
+/*
+=========== Request handler: maps requests to function ===================
+*/
 func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *sql.DB) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	switch r.Method{
 	case "GET":
 		getTodos(w,db)
 	case "POST":
-		getTodos(w,db)
+		createTodo(w,r,db)
 	}
 	// Your code here
 }
+/*
+============= End of request handler ==================
+*/
+
+
+/* 
+=======================================================
+*/
 
 
 /*
---function to get Todos--
+--------------------------------------------------------------------
+---------------------------------------------------------------------
+------------------------START OF CRUD OPERATIONS------------------------
+------------------------------------------------------------------------
+---------------------------------------------------------------------
+*/
+
+/*
+======== function to get Todos ===========
 */
 func getTodos(w http.ResponseWriter, db *sql.DB) {
 	log.Println("chamoy")
 
 	// make query
-    rows, err := db.Query("SELECT id, task, priority FROM todos")
+    rows, err := db.Query("SELECT id, task, description, priority FROM todos")
     if err != nil {
         log.Fatal(err)
     }
@@ -91,7 +109,47 @@ func getTodos(w http.ResponseWriter, db *sql.DB) {
     json.NewEncoder(w).Encode(todos)
 }
 
+/*
+========= function to create Todo  =========
+*/
+func createTodo(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+    var todo Todo
+    if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
 
+    _, err := db.Exec("INSERT INTO todos (task, description, priority) VALUES (?, ?, ?)", todo.Task, todo.Description, todo.Priority)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    w.WriteHeader(http.StatusCreated)
+}
+
+
+/*
+--------------------------------------------------------------------
+---------------------------------------------------------------------
+------------------------END OF CRUD OPERATIONS------------------------
+------------------------------------------------------------------------
+---------------------------------------------------------------------
+*/
+
+
+/*
+=========================================================================
+*/
+
+
+
+/*
+--------------------------------------------------------------------
+---------------------------------------------------------------------
+------------------------CREATE CONNECTION ------------------------
+------------------------------------------------------------------------
+---------------------------------------------------------------------
+*/
 /*
 --function to create connection to db--
 */
@@ -120,4 +178,11 @@ func createConnection(dbpath string) (*sql.DB, error) {
 	log.Println("Successfully connected db")
 	return db,err
 }
+/*
+--------------------------------------------------------------------
+---------------------------------------------------------------------
+------------------------END OF CREATE CONNECTION ------------------------
+------------------------------------------------------------------------
+---------------------------------------------------------------------
+*/
 
