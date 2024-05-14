@@ -67,6 +67,7 @@ function App() {
           body: JSON.stringify(formDataJson)
         });
 
+        // error handling based on response
         if (response.ok) {
           setReloadTodos(prevState => !prevState); // Toggle the flag
           // Clear the form fields
@@ -80,6 +81,7 @@ function App() {
     } else {
       console.log('Format is incorrect ');
     }
+
   }
 
 
