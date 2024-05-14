@@ -16,9 +16,9 @@ func main() {
 	// create 'database'
 	db := []Todo{} 
 
-	person := Todo{Title:"Ballin",Description:"You have to ball"}
+	// person := Todo{Title:"Ballin",Description:"You have to ball"}
 
-	db = append(db,person)
+	// db = append(db,person)
 
 	// --http handler---
 	http.HandleFunc("/todos/",func(w http.ResponseWriter, r *http.Request){
