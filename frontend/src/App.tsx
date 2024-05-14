@@ -23,18 +23,22 @@ function App() {
     };
 
     fetchTodos();
-  }, [reloadTodos]); // Add reloadTodos to the dependency array
+  }, [reloadTodos]); 
+
+
 
   // Function to reload todos
   const handleReloadTodos = () => {
     setReloadTodos(prevState => !prevState); // Toggle reloadTodos
   };
 
-  // function to make POST request
+  /* 
+  function to make POST request + clears entry
+  */
   const submitToDo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(event.currentTarget); //formData 
 
     // Convert FormData to JSON
     const formDataJson: { [key: string]: string } = {};
@@ -46,7 +50,6 @@ function App() {
         formDataJson[key] = val;
       }
     });
-    // console.log(formDataJson);
 
     // Check if form data has correct length
     const isObjectLengthCorrect = (obj: object) => {
@@ -54,7 +57,7 @@ function App() {
       return keys.length === 2; // since 'text' and 'description'
     };
 
-    if (isObjectLengthCorrect(formDataJson)) {
+    if (isObjectLengthCorrect(formDataJson)) { // only make POST request when format is correct
       try {
         const response = await fetch('http://localhost:8080/todos/', {
           method: 'POST',
@@ -75,9 +78,10 @@ function App() {
         console.error('There was a problem with the fetch operation:', error);
       }
     } else {
-      console.log("Format is incorrect blud");
+      console.log('Format is incorrect ');
     }
   }
+
 
   return (
     <div className="app">
