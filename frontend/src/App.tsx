@@ -1,28 +1,83 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent, useRef } from 'react';
 import './App.css';
 import Todo, { TodoType } from './Todo';
+import { stringify } from 'querystring';
 
 function App() {
   const [todos, setTodos] = useState<TodoType[]>([]);
+  const [reloadTodos, setReloadTodos] = useState(false); // Add reloadTodos state
+  const formRef = useRef<HTMLFormElement>(null); // Create a ref for the form
 
-  // Initially fetch todo
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const todos = await fetch('http://localhost:8080/');
-        if (todos.status !== 200) {
-          console.log('Error fetching data');
-          return;
+        const response = await fetch('http://localhost:8080/todos/');
+        if (!response.ok) {
+          throw new Error('Error fetching data');
         }
-
-        setTodos(await todos.json());
-      } catch (e) {
-        console.log('Could not connect to server. Ensure it is running. ' + e);
+        const fetchedTodos = await response.json();
+        setTodos(fetchedTodos);
+      } catch (error) {
+        console.error('Could not connect to server. Ensure it is running. ' + error);
       }
-    }
+    };
 
-    fetchTodos()
-  }, []);
+    fetchTodos();
+  }, [reloadTodos]); // Add reloadTodos to the dependency array
+
+  // Function to reload todos
+  const handleReloadTodos = () => {
+    setReloadTodos(prevState => !prevState); // Toggle reloadTodos
+  };
+
+  // function to make POST request
+  const submitToDo = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    // Convert FormData to JSON
+    const formDataJson: { [key: string]: string } = {};
+    formData.forEach((value, key) => {
+      const val = value as string;
+
+      // Only add non-empty entries
+      if (val.length !== 0 && key.length !== 0) {
+        formDataJson[key] = val;
+      }
+    });
+    // console.log(formDataJson);
+
+    // Check if form data has correct length
+    const isObjectLengthCorrect = (obj: object) => {
+      const keys = Object.keys(obj);
+      return keys.length === 2; // since 'text' and 'description'
+    };
+
+    if (isObjectLengthCorrect(formDataJson)) {
+      try {
+        const response = await fetch('http://localhost:8080/todos/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formDataJson)
+        });
+
+        if (response.ok) {
+          setReloadTodos(prevState => !prevState); // Toggle the flag
+          // Clear the form fields
+          formRef.current?.reset();
+        } else {
+          console.log('Error adding todo');
+        }
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
+    } else {
+      console.log("Format is incorrect blud");
+    }
+  }
 
   return (
     <div className="app">
@@ -41,10 +96,10 @@ function App() {
       </div>
 
       <h2>Add a Todo</h2>
-      <form>
+      <form onSubmit={submitToDo} ref={formRef}>
         <input placeholder="Title" name="title" autoFocus={true} />
         <input placeholder="Description" name="description" />
-        <button>Add Todo</button>
+        <button type="submit">Add Todo</button>
       </form>
     </div>
   );
