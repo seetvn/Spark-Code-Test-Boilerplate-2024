@@ -1,11 +1,9 @@
 package main
 
 import ("net/http"
-// "database/sql"
 _ "github.com/mattn/go-sqlite3"
 "encoding/json"
 "log"
-//  "os"
 )
 
 type Todo struct {
@@ -15,6 +13,7 @@ type Todo struct {
 
 
 func main() {
+	// create 'database'
 	db := []Todo{} 
 
 	person := Todo{Task:"Ballin",Description:"You have to ball"}
@@ -27,13 +26,12 @@ func main() {
 })
     // --http server at port8080--
 	http.ListenAndServe(":8080", nil)
-	
-
 }
 
 /*
-=========== Request handler: maps requests to function ===================
+======================== Request handler: maps requests to function ===============================
 */
+
 func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *[]Todo) {
 	if r.Method == "OPTIONS" {
         w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -53,14 +51,11 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *[]Todo) {
     }
 	// Your code here
 }
+
 /*
-============= End of request handler ==================
+=============================== End of request handler =====================================
 */
 
-
-/* 
-=======================================================
-*/
 
 
 /*
@@ -78,9 +73,7 @@ func getTodos(w http.ResponseWriter, db *[]Todo) {
 	log.Println("=========fuiyohh=======")
 	w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(*db)
-
 }
-
 
 /*
 ========= function to create Todo  =========
@@ -95,9 +88,7 @@ func createTodo(w http.ResponseWriter, r *http.Request,db *[]Todo) {
 	// adds to db
     *db = append(*db,todo)
     w.WriteHeader(http.StatusCreated)
-
 }
-
 
 /*
 --------------------------------------------------------------------
