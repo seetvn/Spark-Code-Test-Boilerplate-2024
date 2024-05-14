@@ -33,6 +33,8 @@ func main() {
 */
 
 func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *[]Todo) {
+
+	// CORS
 	if r.Method == "OPTIONS" {
         w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
         w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
@@ -72,6 +74,8 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *[]Todo) {
 func getTodos(w http.ResponseWriter, db *[]Todo) {
 	log.Println("====== Fetching data ======")
 	w.Header().Set("Content-Type", "application/json")
+
+	// returns the 'database' as json
     json.NewEncoder(w).Encode(*db)
 }
 
@@ -86,7 +90,7 @@ func createTodo(w http.ResponseWriter, r *http.Request,db *[]Todo) {
         return
     }
 
-	// adds to db
+	// adds to db and returns status
     *db = append(*db,todo)
     w.WriteHeader(http.StatusCreated)
 }
