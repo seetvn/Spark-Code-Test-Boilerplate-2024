@@ -13,6 +13,7 @@ type Todo struct {
     Task string `json:"task"`
 	Description string `json:"description"`
 	Priority string `json:"priority"`
+	Finished bool `json:"finished"`
 }
 
 
@@ -31,7 +32,8 @@ func main() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task TEXT,
 			description TEXT,
-			priority TEXT
+			priority TEXT,
+			finished INTEGER
         );
     `
 	_, err := db.Exec(createTable)
@@ -41,7 +43,7 @@ func main() {
     }
 
 	// --http handler---
-	http.HandleFunc("/todos",func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/todos/",func(w http.ResponseWriter, r *http.Request){
         ToDoListHandler(w, r,db)
 })
     // --http server at port8080--
@@ -60,6 +62,12 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *sql.DB) {
 		getTodos(w,db)
 	case "POST":
 		createTodo(w,r,db)
+	case "PATCH":
+		updateTodo(w,r,db)
+	case "PUT":
+		updateTodo(w,r,db)
+	case "DELETE":
+		deleteTodo(w,r,db)
 	}
 	// Your code here
 }
@@ -88,7 +96,7 @@ func getTodos(w http.ResponseWriter, db *sql.DB) {
 	log.Println("chamoy")
 
 	// make query
-    rows, err := db.Query("SELECT id, task, description, priority FROM todos")
+    rows, err := db.Query("SELECT id, task, description, priority, finished FROM todos")
     if err != nil {
         log.Fatal(err)
     }
@@ -98,7 +106,7 @@ func getTodos(w http.ResponseWriter, db *sql.DB) {
     var todos []Todo
     for rows.Next() {
         var todo Todo
-        if err := rows.Scan(&todo.ID, &todo.Task, &todo.Description, &todo.Priority); err != nil {
+        if err := rows.Scan(&todo.ID, &todo.Task, &todo.Description, &todo.Priority, &todo.Finished); err != nil {
             log.Fatal(err)
         }
         todos = append(todos, todo)
@@ -119,12 +127,54 @@ func createTodo(w http.ResponseWriter, r *http.Request, db *sql.DB) {
         return
     }
 
-    _, err := db.Exec("INSERT INTO todos (task, description, priority) VALUES (?, ?, ?)", todo.Task, todo.Description, todo.Priority)
+    _, err := db.Exec("INSERT INTO todos (task, description, priority,finished) VALUES (?, ?, ?, ?)", todo.Task, todo.Description, todo.Priority, todo.Finished)
     if err != nil {
         log.Fatal(err)
     }
 
     w.WriteHeader(http.StatusCreated)
+}
+
+/*
+========= function to PATCH/PUT Todo =============
+*/
+func updateTodo(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	log.Println("===hello====")
+    // Extract todo ID from the request URL
+    todoID := r.URL.Path[len("/todos/"):]
+	log.Println(todoID)
+    
+    // Parse JSON request body into Todo struct
+    var todo Todo
+    if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+    
+    // Execute SQL UPDATE statement to update todo in the database
+    _, err := db.Exec("UPDATE todos SET task = ?, description = ?, priority = ? WHERE id = ?", todo.Task, todo.Description, todo.Priority, todoID)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    w.WriteHeader(http.StatusOK)
+}
+
+/*
+========= function to DELETE Todo =============
+*/
+func deleteTodo(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+    // Extract todo ID from the request URL
+    todoID := r.URL.Path[len("/todos/"):]
+	log.Println("====="+todoID+"========")
+    
+    // Execute SQL DELETE statement to delete todo from the database
+    _, err := db.Exec("DELETE FROM todos WHERE id = ?", todoID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusOK)
 }
 
 
