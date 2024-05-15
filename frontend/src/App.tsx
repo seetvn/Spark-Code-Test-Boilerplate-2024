@@ -51,7 +51,7 @@ function App() {
     // Check if form data has correct length
     const isObjectLengthCorrect = (obj: object) => {
       const keys = Object.keys(obj);
-      return keys.length === 2; // since 'text' and 'description'
+      return keys.length === 3; // since 'text' and 'description' and 'priority'
     };
 
     if (isObjectLengthCorrect(formDataJson)) {
@@ -91,15 +91,22 @@ function App() {
             key={todo.task + todo.description}
             task={todo.task}
             description={todo.description}
+            priority={todo.priority}
+            finished={todo.finished}
           />
         )}
       </div>
 
       <h2>Add a Todo</h2>
       <form onSubmit={submitToDo} ref={formRef}>
-        <input placeholder="Task" name="task" autoFocus={true} />
-        <input placeholder="Description" name="description" />
-        <button type="submit">Add Todo</button>
+      <select name="priority">
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      <input placeholder="Task" name="task" autoFocus={true} />
+      <input placeholder="Description" name="description" />
+      <button type="submit">Add Todo</button>
       </form>
     </div>
   );
