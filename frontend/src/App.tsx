@@ -99,9 +99,9 @@ function App() {
       <h2>Add a Todo</h2>
       <form onSubmit={submitToDo} ref={formRef}>
       <select name="priority">
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
         </select>
       <input placeholder="Task" name="task" autoFocus={true} />
       <input placeholder="Description" name="description" />
