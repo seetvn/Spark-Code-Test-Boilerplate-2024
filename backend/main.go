@@ -56,6 +56,13 @@ func main() {
 =========== Request handler: maps requests to function ===================
 */
 func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *sql.DB) {
+	//CORS
+	if r.Method == "OPTIONS" {
+        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+        return
+    }
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	switch r.Method{
 	case "GET":
@@ -68,6 +75,9 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *sql.DB) {
 		updateTodo(w,r,db)
 	case "DELETE":
 		deleteTodo(w,r,db)
+	
+	default:
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 	// Your code here
 }
