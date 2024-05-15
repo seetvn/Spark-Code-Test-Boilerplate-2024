@@ -79,6 +79,22 @@ function App() {
     }
   }
 
+  // Function to delete a todo
+  const deleteTodo = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/todos/${encodeURIComponent(id)}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        setReloadTodos(prevState => !prevState); // Toggle the flag to reload todos
+      } else {
+        console.error('Error deleting todo');
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -88,24 +104,26 @@ function App() {
       <div className="todo-list">
         {todos.map((todo) =>
           <Todo
+            id = {todo.id}
             key={todo.task + todo.description}
             task={todo.task}
             description={todo.description}
             priority={todo.priority}
+            onDelete={() => deleteTodo(todo.id)} // Pass deleteTodo function
           />
         )}
       </div>
 
       <h2>Add a Todo</h2>
       <form onSubmit={submitToDo} ref={formRef}>
-      <select name="priority">
+        <select name="priority">
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
-      <input placeholder="Task" name="task" autoFocus={true} />
-      <input placeholder="Description" name="description" />
-      <button type="submit">Add Todo</button>
+        <input placeholder="Task" name="task" autoFocus={true} />
+        <input placeholder="Description" name="description" />
+        <button type="submit">Add Todo</button>
       </form>
     </div>
   );
