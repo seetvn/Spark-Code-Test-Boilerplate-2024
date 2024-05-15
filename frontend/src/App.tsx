@@ -88,8 +88,8 @@ function App() {
       <div className="todo-list">
         {todos.map((todo) =>
           <Todo
-            key={todo.title + todo.description}
-            title={todo.title}
+            key={todo.task + todo.description}
+            task={todo.task}
             description={todo.description}
           />
         )}
@@ -97,7 +97,7 @@ function App() {
 
       <h2>Add a Todo</h2>
       <form onSubmit={submitToDo} ref={formRef}>
-        <input placeholder="Title" name="title" autoFocus={true} />
+        <input placeholder="Task" name="task" autoFocus={true} />
         <input placeholder="Description" name="description" />
         <button type="submit">Add Todo</button>
       </form>
