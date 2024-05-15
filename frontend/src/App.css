@@ -37,7 +37,7 @@
   padding: 15px 0px;
 }
 
-.todo-title {
+.todo-task {
   font-size: 28px;
   font-weight: bold;
 
@@ -93,6 +93,21 @@ input {
   border-color: #464e61;
   border-width: 1px;
   border-radius: 5px;
+}
+
+select{
+  margin-bottom: 10px;
+  font-size: 20px;
+
+  padding: 2px 5px;
+  color: white;
+  background-color: #303540;
+
+  border-style: solid;
+  border-color: #464e61;
+  border-width: 1px;
+  border-radius: 5px;
+
 }
 
 form {
