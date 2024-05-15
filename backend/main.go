@@ -75,7 +75,6 @@ func ToDoListHandler(w http.ResponseWriter, r *http.Request,db *sql.DB) {
 		updateTodo(w,r,db)
 	case "DELETE":
 		deleteTodo(w,r,db)
-	
 	default:
         http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
