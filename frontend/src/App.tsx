@@ -92,7 +92,6 @@ function App() {
             task={todo.task}
             description={todo.description}
             priority={todo.priority}
-            finished={todo.finished}
           />
         )}
       </div>
